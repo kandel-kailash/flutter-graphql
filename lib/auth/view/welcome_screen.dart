@@ -5,84 +5,87 @@ import 'package:github_graphql_app/auth/view_modal/auth_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:github_graphql_app/core/routes/app_route.dart';
 import 'package:go_router/go_router.dart';
 
-class LoginScreen extends StatelessWidget {
-  const LoginScreen({
+class WelcomeScreen extends StatelessWidget {
+  const WelcomeScreen({
     super.key,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          context.read<AuthBloc>().signIn(
-            (authorizationUri) {
-              final completer = Completer<Uri>();
-              context.go(
-                '/auth',
-                extra: AuthScreenRouteInfo(
-                  authUri: authorizationUri,
-                  onAuthCodeRedirectAttempt: (redirectedUrl) =>
-                      completer.complete(redirectedUrl),
-                ),
-              );
-
-              return completer.future;
-            },
-          );
-        },
-        backgroundColor: const Color(0xFF55A247),
-        foregroundColor: Colors.white,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
-        label: const Text(
-          'Sign In   >>',
-          style: TextStyle(
-            fontSize: 16,
-          ),
-        ),
-      ),
-      body: CustomScrollView(
-        clipBehavior: Clip.antiAlias,
-        physics: const NeverScrollableScrollPhysics(),
-        slivers: [
-          SliverPersistentHeader(
-            delegate: LoginSliverHeaderDelegate(),
-            pinned: true,
-          ),
-          SliverPadding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            sliver: SliverList(
-              delegate: SliverChildListDelegate(
-                [
-                  const SizedBox(height: 24),
-                  RichText(
-                    text: const TextSpan(
-                      style: TextStyle(
-                        fontSize: 40,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
-                      ),
-                      text: 'Welcome !',
-                      children: [
-                        TextSpan(
-                          text: '\nSign in to continue..',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.normal,
-                          ),
-                        ),
-                      ],
-                    ),
+    return SafeArea(
+      child: Scaffold(
+        floatingActionButton: FloatingActionButton.extended(
+          onPressed: () {
+            context.read<AuthBloc>().signIn(
+              (authorizationUri) {
+                final completer = Completer<Uri>();
+                context.goNamed(
+                  AppRoute.auth.name,
+                  extra: AuthScreenRouteInfo(
+                    authUri: authorizationUri,
+                    onAuthCodeRedirectAttempt: (redirectedUrl) =>
+                        completer.complete(redirectedUrl),
                   ),
-                ],
-              ),
+                );
+      
+                return completer.future;
+              },
+            );
+          },
+          backgroundColor: const Color(0xFF55A247),
+          foregroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          label: const Text(
+            'Sign In',
+            style: TextStyle(
+              fontSize: 16,
             ),
           ),
-        ],
+        ),
+        body: CustomScrollView(
+          clipBehavior: Clip.antiAlias,
+          physics: const NeverScrollableScrollPhysics(),
+          slivers: [
+            SliverPersistentHeader(
+              delegate: LoginSliverHeaderDelegate(),
+              pinned: true,
+            ),
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              sliver: SliverList(
+                delegate: SliverChildListDelegate(
+                  [
+                    const SizedBox(height: 24),
+                    RichText(
+                      text: const TextSpan(
+                        style: TextStyle(
+                          fontSize: 40,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
+                        text: 'Welcome !',
+                        children: [
+                          TextSpan(
+                            text: '\nSign in to continue..',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.normal,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

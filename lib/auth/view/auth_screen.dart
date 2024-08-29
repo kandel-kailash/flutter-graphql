@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:github_graphql_app/auth/view/login_screen.dart';
 import 'package:github_graphql_app/core/constants/urls.dart';
+import 'package:github_graphql_app/core/routes/app_route.dart';
 import 'package:go_router/go_router.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -21,7 +21,7 @@ class AuthScreen extends StatelessWidget {
         appBar: AppBar(
           elevation: 3,
           leading: BackButton(
-            onPressed: () => context.go('/login'),
+            onPressed: () => context.goNamed(AppRoute.welcome.name),
           ),
           title: const Text('Github Auth'),
         ),
