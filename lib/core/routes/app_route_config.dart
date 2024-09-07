@@ -5,7 +5,7 @@ import 'package:github_graphql_app/core/views/splash_screen.dart';
 import 'package:github_graphql_app/home/view/repo_list_screen.dart';
 import 'package:go_router/go_router.dart';
 
-enum AppRoute {
+enum AppRouteConfig {
   splash(
     '/',
     name: 'splash',
@@ -23,7 +23,7 @@ enum AppRoute {
     name: 'repos',
   );
 
-  const AppRoute(
+  const AppRouteConfig(
     this._path, {
     required this.name,
   });
@@ -32,8 +32,8 @@ enum AppRoute {
   final String name;
 
   GoRouterWidgetBuilder get _builder => switch (this) {
-        AppRoute.splash => (context, state) => const SplashScreen(),
-        AppRoute.auth => (context, state) {
+        AppRouteConfig.splash => (context, state) => const SplashScreen(),
+        AppRouteConfig.auth => (context, state) {
             if (state.extra is! AuthScreenRouteInfo) {
               assert(
                 state.extra is AuthScreenRouteInfo,
@@ -50,8 +50,8 @@ enum AppRoute {
                   authScreenRouteInfo.onAuthCodeRedirectAttempt,
             );
           },
-        AppRoute.welcome => (context, state) => const WelcomeScreen(),
-        AppRoute.repos => (context, state) => const RepoListScreen(),
+        AppRouteConfig.welcome => (context, state) => const WelcomeScreen(),
+        AppRouteConfig.repos => (context, state) => const RepoListScreen(),
       };
 
   static GoRouter get router => GoRouter(
