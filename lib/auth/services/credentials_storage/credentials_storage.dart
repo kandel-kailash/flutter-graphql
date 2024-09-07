@@ -1,6 +1,6 @@
 import 'package:oauth2/oauth2.dart';
 
-abstract class CredentialsStorage {
+abstract interface class CredentialsStorage {
   ///
   /// Read credentials from the local storage
   /// Credentials can be null if user is not authenticated

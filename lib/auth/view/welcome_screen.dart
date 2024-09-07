@@ -1,17 +1,15 @@
 import 'dart:async';
 
-import 'package:github_graphql_app/auth/modal/auth_screen_route_info.dart';
-import 'package:github_graphql_app/auth/view_modal/auth_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:github_graphql_app/core/routes/app_route.dart';
+import 'package:github_graphql_app/auth/modal/auth_screen_route_info.dart';
+import 'package:github_graphql_app/auth/view_modal/auth_cubit.dart';
+import 'package:github_graphql_app/core/routes/app_route_config.dart';
 import 'package:go_router/go_router.dart';
 
 class WelcomeScreen extends StatelessWidget {
-  const WelcomeScreen({
-    super.key,
-  });
+  const WelcomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -23,14 +21,14 @@ class WelcomeScreen extends StatelessWidget {
               (authorizationUri) {
                 final completer = Completer<Uri>();
                 context.goNamed(
-                  AppRoute.auth.name,
+                  AppRouteConfig.auth.name,
                   extra: AuthScreenRouteInfo(
                     authUri: authorizationUri,
                     onAuthCodeRedirectAttempt: (redirectedUrl) =>
                         completer.complete(redirectedUrl),
                   ),
                 );
-      
+
                 return completer.future;
               },
             );
@@ -52,7 +50,7 @@ class WelcomeScreen extends StatelessWidget {
           physics: const NeverScrollableScrollPhysics(),
           slivers: [
             SliverPersistentHeader(
-              delegate: LoginSliverHeaderDelegate(),
+              delegate: _WelcomeSliverHeaderDelegate(),
               pinned: true,
             ),
             SliverPadding(
@@ -71,7 +69,7 @@ class WelcomeScreen extends StatelessWidget {
                         text: 'Welcome !',
                         children: [
                           TextSpan(
-                            text: '\nSign in to continue..',
+                            text: '\nPlease sign in to continue..',
                             style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.normal,
@@ -91,78 +89,14 @@ class WelcomeScreen extends StatelessWidget {
   }
 }
 
-class LoginSliverHeaderDelegate extends SliverPersistentHeaderDelegate {
+class _WelcomeSliverHeaderDelegate extends SliverPersistentHeaderDelegate {
   @override
   Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
-    return Stack(
-      children: [
-        Container(
-          margin: EdgeInsets.only(bottom: 20 - (shrinkOffset * .025)),
-          decoration: BoxDecoration(
-            color: const Color(0xFF24292F),
-            borderRadius: const BorderRadius.vertical(
-              bottom: Radius.circular(100),
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey[400]!,
-                offset: const Offset(0, 2),
-                blurRadius: 2,
-              )
-            ],
-          ),
-          alignment: Alignment.center,
-          child: SvgPicture.asset(
-            'assets/svgs/github.svg',
-            theme: const SvgTheme(currentColor: Colors.white38),
-            height: 100,
-            width: 100,
-          ),
-        ),
-        Align(
-          alignment: Alignment.bottomCenter,
-          // Animation is functional but needs scroll effect to work
-          // child: AnimatedContainer(
-          child: Container(
-            alignment: Alignment.center,
-            // duration: const Duration(milliseconds: 200),
-            height: 50,
-            // - (shrinkOffset <= 40 ? shrinkOffset : 20),
-            width: 250,
-            //  - (shrinkOffset <= 50 ? shrinkOffset : 50),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey[500]!,
-                  offset: const Offset(0, 2),
-                  blurRadius: 3,
-                )
-              ],
-            ),
-            // child: AnimatedDefaultTextStyle(
-            //   style: TextStyle(
-            //     fontSize: 25 - (shrinkOffset * 0.04),
-            //     color: Colors.black,
-            //     fontWeight: FontWeight.w500,
-            //   ),
-            //   duration: const Duration(milliseconds: 100),
-            //   curve: Curves.linear,
-            child: const Text(
-              'GitHub Client App',
-              style: TextStyle(
-                fontSize: 25,
-                color: Colors.black,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
-        ),
-        // ),
-      ],
-    );
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
+    return _WelcomePersistentHeader(maxExtent: maxExtent);
   }
 
   @override
@@ -174,4 +108,112 @@ class LoginSliverHeaderDelegate extends SliverPersistentHeaderDelegate {
   @override
   bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) =>
       false;
+}
+
+class _WelcomePersistentHeader extends StatefulWidget {
+  const _WelcomePersistentHeader({required this.maxExtent});
+
+  final double maxExtent;
+
+  @override
+  State<_WelcomePersistentHeader> createState() =>
+      _WelcomePersistentHeaderState();
+}
+
+class _WelcomePersistentHeaderState extends State<_WelcomePersistentHeader>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller = AnimationController(
+    vsync: this,
+    duration: const Duration(seconds: 1),
+  );
+
+  AlignmentGeometry _textContainerAlignment = Alignment.topCenter;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _controller.forward();
+    _controller.addListener(
+      () {
+        if (_textContainerAlignment != Alignment.bottomCenter) {
+          setState(() => _textContainerAlignment = Alignment.bottomCenter);
+        }
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        ValueListenableBuilder(
+          valueListenable: _controller,
+          builder: (_, value, __) => AnimatedContainer(
+            duration: const Duration(milliseconds: 100),
+            height: value * widget.maxExtent,
+            margin: const EdgeInsets.only(bottom: 20),
+            decoration: BoxDecoration(
+              color: const Color(0xFF24292F),
+              borderRadius: BorderRadius.vertical(
+                bottom: Radius.circular(value * 100),
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey[400]!,
+                  offset: const Offset(0, 2),
+                  blurRadius: 2,
+                )
+              ],
+            ),
+            alignment: Alignment.center,
+            child: SvgPicture.asset(
+              'assets/svgs/github-logo.svg',
+              colorFilter: const ColorFilter.mode(
+                Colors.white,
+                BlendMode.srcIn,
+              ),
+              height: 100,
+              width: 100,
+            ),
+          ),
+        ),
+        FadeTransition(
+          opacity: CurvedAnimation(
+            parent: _controller,
+            curve: Curves.linear,
+          ),
+          child: AnimatedAlign(
+            curve: Curves.linearToEaseOut,
+            duration: const Duration(seconds: 1),
+            alignment: _textContainerAlignment,
+            child: Container(
+              alignment: Alignment.center,
+              height: 50,
+              width: 250,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey[500]!,
+                    offset: const Offset(0, 2),
+                    blurRadius: 3,
+                  )
+                ],
+              ),
+              child: const Text(
+                'GitHub Client App',
+                style: TextStyle(
+                  fontSize: 25,
+                  color: Colors.black,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
 }

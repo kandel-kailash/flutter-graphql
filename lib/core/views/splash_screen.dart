@@ -12,7 +12,13 @@ class SplashScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SvgPicture.asset('assets/svgs/github.svg'),
+            SvgPicture.asset(
+              'assets/svgs/github-logo.svg',
+              colorFilter: const ColorFilter.mode(
+                Colors.black,
+                BlendMode.srcIn,
+              ),
+            ),
             const SizedBox(height: 24),
             const LinearProgressIndicator(),
           ],
