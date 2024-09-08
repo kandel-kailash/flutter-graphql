@@ -1,15 +1,13 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/services.dart';
-import 'package:http/http.dart' as http;
-import 'package:oauth2/oauth2.dart';
-
 import 'package:github_graphql_app/auth/modal/auth_failure.dart';
 import 'package:github_graphql_app/auth/services/credentials_storage/credentials_storage.dart';
 import 'package:github_graphql_app/core/constants/urls.dart';
-import 'package:github_graphql_app/core/env/env.dart';
 import 'package:github_graphql_app/core/extensions/dio_extensions.dart';
 import 'package:github_graphql_app/core/shared/encoders.dart';
+import 'package:http/http.dart' as http;
+import 'package:oauth2/oauth2.dart';
 
 ///
 /// New [ HttpClient ] with [ Accept : application/json] header
@@ -30,9 +28,12 @@ class GithubAuthenticator {
 
   GithubAuthenticator(this._credentialsStorage, this._dio);
 
+  static const _clientId = String.fromEnvironment('clientId');
+  static const _clientSecret = String.fromEnvironment('clientSecret');
+
   static const scopes = ['read:user', 'repo'];
   static const revocationEndpoint =
-      'https://api.github.com/applications/${Env.clientId}/token';
+      'https://api.github.com/applications/$_clientId/token';
 
   Future<Credentials?> getSignedInCredentials() async {
     try {
@@ -48,10 +49,10 @@ class GithubAuthenticator {
 
   AuthorizationCodeGrant createGrant() {
     return AuthorizationCodeGrant(
-      Env.clientId,
+      _clientId,
       Uri.parse(authEndpoint),
       Uri.parse(tokenEndpoint),
-      secret: Env.clientSecret,
+      secret: _clientSecret,
       httpClient: GithubOAuthHttpClient(),
     );
   }
@@ -87,7 +88,7 @@ class GithubAuthenticator {
         .then((credentials) => credentials?.accessToken);
 
     final encodedCredentials =
-        stringToBase64.encode('${Env.clientId}:${Env.clientSecret}');
+        stringToBase64.encode('$_clientId:$_clientSecret');
 
     try {
       try {
