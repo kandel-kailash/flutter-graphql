@@ -2,7 +2,7 @@ import 'package:github_graphql_app/auth/modal/auth_screen_route_info.dart';
 import 'package:github_graphql_app/auth/view/auth_screen.dart';
 import 'package:github_graphql_app/auth/view/welcome_screen.dart';
 import 'package:github_graphql_app/core/views/splash_screen.dart';
-import 'package:github_graphql_app/home/view/repo_list_screen.dart';
+import 'package:github_graphql_app/repos/view/repo_list_screen.dart';
 import 'package:go_router/go_router.dart';
 
 enum AppRouteConfig {
@@ -31,15 +31,17 @@ enum AppRouteConfig {
   final String _path;
   final String name;
 
-  GoRouterWidgetBuilder get _builder => switch (this) {
-        AppRouteConfig.splash => (context, state) => const SplashScreen(),
-        AppRouteConfig.auth => (context, state) {
+  GoRouterWidgetBuilder get _builder {
+    return (context, state) {
+      return switch (this) {
+        AppRouteConfig.splash => const SplashScreen(),
+        AppRouteConfig.auth => () {
             if (state.extra is! AuthScreenRouteInfo) {
               assert(
                 state.extra is AuthScreenRouteInfo,
                 'Incorrect route data provided!',
               );
-              return const WelcomeScreen();
+              return WelcomeScreenView.responsive(context);
             }
 
             final authScreenRouteInfo = state.extra as AuthScreenRouteInfo;
@@ -49,10 +51,12 @@ enum AppRouteConfig {
               onAuthCodeRedirectAttempt:
                   authScreenRouteInfo.onAuthCodeRedirectAttempt,
             );
-          },
-        AppRouteConfig.welcome => (context, state) => const WelcomeScreen(),
-        AppRouteConfig.repos => (context, state) => const RepoListScreen(),
+          }(),
+        AppRouteConfig.welcome => WelcomeScreenView.responsive(context),
+        AppRouteConfig.repos => RepoListView.responsive(context),
       };
+    };
+  }
 
   static GoRouter get router => GoRouter(
         routes: values

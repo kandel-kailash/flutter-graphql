@@ -1,44 +1,12 @@
-import 'package:github_graphql_app/auth/view_modal/auth_cubit.dart';
-import 'package:github_graphql_app/home/model/user/user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-class AppBarContent extends StatelessWidget {
-  final String? name;
-
-  const AppBarContent({
-    super.key,
-    this.name,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Ink(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          const SizedBox(width: 20),
-          Text(
-            name ?? '...',
-            style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          IconButton(
-            onPressed: () {
-              context.read<AuthBloc>().signOut();
-            },
-            icon: const Icon(Icons.logout_rounded),
-          )
-        ],
-      ),
-    );
-  }
-}
+import 'package:github_graphql_app/auth/view_modal/auth_cubit.dart';
+import 'package:github_graphql_app/repos/model/user/user.dart';
 
 class CustomAppBar extends StatelessWidget {
   final User? user;
+
+  
 
   const CustomAppBar({super.key, this.user});
 
@@ -70,8 +38,8 @@ class CustomAppBar extends StatelessWidget {
               ],
             ),
             child: user == null
-                ? const AppBarContent()
-                : AppBarContent(
+                ? const _AppBarContent()
+                : _AppBarContent(
                     name: user?.name,
                   ),
           ),
@@ -84,6 +52,37 @@ class CustomAppBar extends StatelessWidget {
                   radius: 40,
                   backgroundImage: NetworkImage(user!.avatarUrl),
                 )
+        ],
+      ),
+    );
+  }
+}
+
+class _AppBarContent extends StatelessWidget {
+  final String? name;
+
+  const _AppBarContent({this.name});
+
+  @override
+  Widget build(BuildContext context) {
+    return Ink(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          const SizedBox(width: 20),
+          Text(
+            name ?? '...',
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          IconButton(
+            onPressed: () {
+              context.read<AuthCubit>().signOut();
+            },
+            icon: const Icon(Icons.logout_rounded),
+          )
         ],
       ),
     );

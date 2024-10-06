@@ -35,6 +35,8 @@ class GithubAuthenticator {
   static const revocationEndpoint =
       'https://api.github.com/applications/$_clientId/token';
 
+  static Uri get redirectUri => Uri.parse(redirectUrl);
+
   Future<Credentials?> getSignedInCredentials() async {
     try {
       final storedCredentials = await _credentialsStorage.read();
@@ -44,25 +46,23 @@ class GithubAuthenticator {
     }
   }
 
-  Future<bool> isSignedIn() =>
-      getSignedInCredentials().then((credentials) => credentials != null);
+  Future<bool> isSignedIn() => getSignedInCredentials().then(
+        (credentials) => credentials?.isExpired == false,
+      );
 
-  AuthorizationCodeGrant createGrant() {
-    return AuthorizationCodeGrant(
-      _clientId,
-      Uri.parse(authEndpoint),
-      Uri.parse(tokenEndpoint),
-      secret: _clientSecret,
-      httpClient: GithubOAuthHttpClient(),
-    );
-  }
+  AuthorizationCodeGrant get grant => AuthorizationCodeGrant(
+        _clientId,
+        Uri.parse(authEndpoint),
+        Uri.parse(tokenEndpoint),
+        secret: _clientSecret,
+        httpClient: GithubOAuthHttpClient(),
+      );
 
-  Uri getAuthorizationUrl(AuthorizationCodeGrant grant) {
-    return grant.getAuthorizationUrl(
-      Uri.parse(redirectUrl),
-      scopes: scopes,
-    );
-  }
+  Uri getAuthorizationUrl(AuthorizationCodeGrant grant) =>
+      grant.getAuthorizationUrl(
+        redirectUri,
+        scopes: scopes,
+      );
 
   Future<Either<AuthFailure, Unit>> handleAuthorizationResponse(
     AuthorizationCodeGrant grant,

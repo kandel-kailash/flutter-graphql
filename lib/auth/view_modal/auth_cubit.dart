@@ -9,12 +9,14 @@ typedef AuthUriCallback = Future<Uri> Function(Uri authorizationUrl);
 /// ==> uses [ GithubAuthenticator ] service
 /// ==> produces [ AuthState] that is used by the presentation layer
 ///
-class AuthBloc extends Cubit<AuthState> {
-  final GithubAuthenticator _authenticator;
-
-  AuthBloc(this._authenticator) : super(const AuthState.initial()) {
+class AuthCubit extends Cubit<AuthState> {
+  AuthCubit(this._authenticator) : super(const AuthState.initial()) {
     checkAndUpdateAuthStatus();
   }
+
+  final GithubAuthenticator _authenticator;
+
+  bool isStartUp = true;
 
   Future<void> checkAndUpdateAuthStatus() async {
     emit(
@@ -24,33 +26,38 @@ class AuthBloc extends Cubit<AuthState> {
     );
   }
 
+  void authenticateUser() => emit(const AuthState.authenticated());
+
   Future<void> signIn(AuthUriCallback authorizationCallback) async {
-    // 1. create grant to get authorization url
-    final grant = _authenticator.createGrant();
+    try {
+      // 1. Obtain a grant to get authorization url
+      final grant = _authenticator.grant;
 
-    /// 2. callback is called from view
-    ///    takes in [ authorizationUrl ] returned by the [ getAuthorizationUrl]
-    ///    returns a [ Uri ] which is the redirect Uri that contains the [ code]
-    final redirectUrl = await authorizationCallback(
-      _authenticator.getAuthorizationUrl(grant),
-    );
+      // 2. Callback is called from view that
+      //    - takes in the `authorizationUrl` returned by the `getAuthorizationUrl`
+      //    - returns a `Uri` which is the redirect Uri that contains the `code`
+      final redirectUrl = await authorizationCallback(
+        _authenticator.getAuthorizationUrl(grant),
+      );
 
-    /// 3. handles if user is autheticated or not
-    ///    returns [ AuthFailure ] if failure
-    ///    [ Unit ] if success
-    final failOrSuccess = await _authenticator.handleAuthorizationResponse(
-        grant, redirectUrl.queryParameters);
+      // 3. Handles if user is authenticated or not and returns [ AuthFailure ] if
+      // failure, [ Unit ] if success
+      final failOrSuccess = await _authenticator.handleAuthorizationResponse(
+          grant, redirectUrl.queryParameters);
 
-    // 4. push state in the stream
-    emit(
-      failOrSuccess.fold(
-        (l) => AuthState.failure(l),
-        (r) => const AuthState.authenticated(),
-      ),
-    );
+      // 4. push state in the stream
+      emit(
+        failOrSuccess.fold(
+          (l) => AuthState.failure(l),
+          (r) => const AuthState.authenticated(),
+        ),
+      );
 
-    // 5. close the grant
-    grant.close();
+      // 5. close the grant
+      grant.close();
+    } catch (e) {
+      emit(const AuthState.unauthenticated());
+    }
   }
 
   Future<void> signOut() async {

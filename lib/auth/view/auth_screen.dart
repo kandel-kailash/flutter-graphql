@@ -16,36 +16,53 @@ class AuthScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          elevation: 3,
-          leading: BackButton(
-            onPressed: () => context.goNamed(AppRouteConfig.welcome.name),
-          ),
-          title: const Text('Github Auth'),
+    return Scaffold(
+      appBar: AppBar(
+        elevation: 3,
+        leading: BackButton(
+          onPressed: () => context.goNamed(AppRouteConfig.welcome.name),
         ),
-        body: WebViewWidget(
-          controller: WebViewController(
-            onPermissionRequest: (request) {},
-          )
-            ..setNavigationDelegate(NavigationDelegate(
-              onNavigationRequest: (request) {
-                final currentUrl = request.url;
-                if (!currentUrl.contains(redirectUrl)) {
-                  return NavigationDecision.navigate;
-                }
-
-                onAuthCodeRedirectAttempt(Uri.parse(currentUrl));
-                return NavigationDecision.prevent;
-              },
-            ))
-            ..setJavaScriptMode(JavaScriptMode.unrestricted)
-            ..loadRequest(
-              authUrl,
-            ),
-        ),
+        title: const Text('Github Auth'),
       ),
+      body: AuthBody(
+        authUrl: authUrl,
+        onAuthCodeRedirectAttempt: onAuthCodeRedirectAttempt,
+      ),
+    );
+  }
+}
+
+class AuthBody extends StatelessWidget {
+  const AuthBody({
+    super.key,
+    required this.authUrl,
+    required this.onAuthCodeRedirectAttempt,
+  });
+
+  final Uri authUrl;
+  final void Function(Uri redirectUrl) onAuthCodeRedirectAttempt;
+
+  @override
+  Widget build(BuildContext context) {
+    return WebViewWidget(
+      controller: WebViewController()
+        ..setNavigationDelegate(
+          NavigationDelegate(
+            onNavigationRequest: (request) {
+              final currentUrl = request.url;
+              if (!currentUrl.contains(redirectUrl)) {
+                return NavigationDecision.navigate;
+              }
+
+              onAuthCodeRedirectAttempt(Uri.parse(currentUrl));
+              return NavigationDecision.prevent;
+            },
+          ),
+        )
+        ..setJavaScriptMode(JavaScriptMode.unrestricted)
+        ..loadRequest(
+          authUrl,
+        ),
     );
   }
 }

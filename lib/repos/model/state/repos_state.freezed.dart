@@ -3,7 +3,7 @@
 // ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
-part of 'home_state.dart';
+part of 'repos_state.dart';
 
 // **************************************************************************
 // FreezedGenerator
@@ -15,7 +15,7 @@ final _privateConstructorUsedError = UnsupportedError(
     'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 /// @nodoc
-mixin _$HomeState {
+mixin _$ReposState {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
@@ -69,22 +69,23 @@ mixin _$HomeState {
 }
 
 /// @nodoc
-abstract class $HomeStateCopyWith<$Res> {
-  factory $HomeStateCopyWith(HomeState value, $Res Function(HomeState) then) =
-      _$HomeStateCopyWithImpl<$Res, HomeState>;
+abstract class $ReposStateCopyWith<$Res> {
+  factory $ReposStateCopyWith(
+          ReposState value, $Res Function(ReposState) then) =
+      _$ReposStateCopyWithImpl<$Res, ReposState>;
 }
 
 /// @nodoc
-class _$HomeStateCopyWithImpl<$Res, $Val extends HomeState>
-    implements $HomeStateCopyWith<$Res> {
-  _$HomeStateCopyWithImpl(this._value, this._then);
+class _$ReposStateCopyWithImpl<$Res, $Val extends ReposState>
+    implements $ReposStateCopyWith<$Res> {
+  _$ReposStateCopyWithImpl(this._value, this._then);
 
   // ignore: unused_field
   final $Val _value;
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of HomeState
+  /// Create a copy of ReposState
   /// with the given fields replaced by the non-null parameter values.
 }
 
@@ -97,13 +98,13 @@ abstract class _$$InitialImplCopyWith<$Res> {
 
 /// @nodoc
 class __$$InitialImplCopyWithImpl<$Res>
-    extends _$HomeStateCopyWithImpl<$Res, _$InitialImpl>
+    extends _$ReposStateCopyWithImpl<$Res, _$InitialImpl>
     implements _$$InitialImplCopyWith<$Res> {
   __$$InitialImplCopyWithImpl(
       _$InitialImpl _value, $Res Function(_$InitialImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of HomeState
+  /// Create a copy of ReposState
   /// with the given fields replaced by the non-null parameter values.
 }
 
@@ -114,7 +115,7 @@ class _$InitialImpl extends _Initial {
 
   @override
   String toString() {
-    return 'HomeState.initial()';
+    return 'ReposState.initial()';
   }
 
   @override
@@ -201,7 +202,7 @@ class _$InitialImpl extends _Initial {
   }
 }
 
-abstract class _Initial extends HomeState {
+abstract class _Initial extends ReposState {
   const factory _Initial() = _$InitialImpl;
   const _Initial._() : super._();
 }
@@ -215,13 +216,13 @@ abstract class _$$LoadingImplCopyWith<$Res> {
 
 /// @nodoc
 class __$$LoadingImplCopyWithImpl<$Res>
-    extends _$HomeStateCopyWithImpl<$Res, _$LoadingImpl>
+    extends _$ReposStateCopyWithImpl<$Res, _$LoadingImpl>
     implements _$$LoadingImplCopyWith<$Res> {
   __$$LoadingImplCopyWithImpl(
       _$LoadingImpl _value, $Res Function(_$LoadingImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of HomeState
+  /// Create a copy of ReposState
   /// with the given fields replaced by the non-null parameter values.
 }
 
@@ -232,7 +233,7 @@ class _$LoadingImpl extends _Loading {
 
   @override
   String toString() {
-    return 'HomeState.loading()';
+    return 'ReposState.loading()';
   }
 
   @override
@@ -319,7 +320,7 @@ class _$LoadingImpl extends _Loading {
   }
 }
 
-abstract class _Loading extends HomeState {
+abstract class _Loading extends ReposState {
   const factory _Loading() = _$LoadingImpl;
   const _Loading._() : super._();
 }
@@ -337,13 +338,13 @@ abstract class _$$LoadedImplCopyWith<$Res> {
 
 /// @nodoc
 class __$$LoadedImplCopyWithImpl<$Res>
-    extends _$HomeStateCopyWithImpl<$Res, _$LoadedImpl>
+    extends _$ReposStateCopyWithImpl<$Res, _$LoadedImpl>
     implements _$$LoadedImplCopyWith<$Res> {
   __$$LoadedImplCopyWithImpl(
       _$LoadedImpl _value, $Res Function(_$LoadedImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of HomeState
+  /// Create a copy of ReposState
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
@@ -363,7 +364,7 @@ class __$$LoadedImplCopyWithImpl<$Res>
     ));
   }
 
-  /// Create a copy of HomeState
+  /// Create a copy of ReposState
   /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
@@ -394,7 +395,7 @@ class _$LoadedImpl extends _Loaded {
 
   @override
   String toString() {
-    return 'HomeState.loaded(user: $user, repos: $repos)';
+    return 'ReposState.loaded(user: $user, repos: $repos)';
   }
 
   @override
@@ -410,7 +411,7 @@ class _$LoadedImpl extends _Loaded {
   int get hashCode => Object.hash(
       runtimeType, user, const DeepCollectionEquality().hash(_repos));
 
-  /// Create a copy of HomeState
+  /// Create a copy of ReposState
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
@@ -493,7 +494,7 @@ class _$LoadedImpl extends _Loaded {
   }
 }
 
-abstract class _Loaded extends HomeState {
+abstract class _Loaded extends ReposState {
   const factory _Loaded(
       {required final User user,
       required final List<GithubRepository> repos}) = _$LoadedImpl;
@@ -502,7 +503,7 @@ abstract class _Loaded extends HomeState {
   User get user;
   List<GithubRepository> get repos;
 
-  /// Create a copy of HomeState
+  /// Create a copy of ReposState
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$LoadedImplCopyWith<_$LoadedImpl> get copyWith =>
@@ -520,13 +521,13 @@ abstract class _$$FailureImplCopyWith<$Res> {
 
 /// @nodoc
 class __$$FailureImplCopyWithImpl<$Res>
-    extends _$HomeStateCopyWithImpl<$Res, _$FailureImpl>
+    extends _$ReposStateCopyWithImpl<$Res, _$FailureImpl>
     implements _$$FailureImplCopyWith<$Res> {
   __$$FailureImplCopyWithImpl(
       _$FailureImpl _value, $Res Function(_$FailureImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of HomeState
+  /// Create a copy of ReposState
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
@@ -552,7 +553,7 @@ class _$FailureImpl extends _Failure {
 
   @override
   String toString() {
-    return 'HomeState.failure(message: $message)';
+    return 'ReposState.failure(message: $message)';
   }
 
   @override
@@ -566,7 +567,7 @@ class _$FailureImpl extends _Failure {
   @override
   int get hashCode => Object.hash(runtimeType, message);
 
-  /// Create a copy of HomeState
+  /// Create a copy of ReposState
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
@@ -649,13 +650,13 @@ class _$FailureImpl extends _Failure {
   }
 }
 
-abstract class _Failure extends HomeState {
+abstract class _Failure extends ReposState {
   const factory _Failure(final String message) = _$FailureImpl;
   const _Failure._() : super._();
 
   String get message;
 
-  /// Create a copy of HomeState
+  /// Create a copy of ReposState
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$FailureImplCopyWith<_$FailureImpl> get copyWith =>

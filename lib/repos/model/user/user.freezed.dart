@@ -20,9 +20,7 @@ User _$UserFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$User {
-  @JsonKey(name: 'name')
   String get name => throw _privateConstructorUsedError;
-  @JsonKey(name: 'avatarUrl')
   String get avatarUrl => throw _privateConstructorUsedError;
 
   /// Serializes this User to a JSON map.
@@ -39,9 +37,7 @@ abstract class $UserCopyWith<$Res> {
   factory $UserCopyWith(User value, $Res Function(User) then) =
       _$UserCopyWithImpl<$Res, User>;
   @useResult
-  $Res call(
-      {@JsonKey(name: 'name') String name,
-      @JsonKey(name: 'avatarUrl') String avatarUrl});
+  $Res call({String name, String avatarUrl});
 }
 
 /// @nodoc
@@ -82,9 +78,7 @@ abstract class _$$UserImplCopyWith<$Res> implements $UserCopyWith<$Res> {
       __$$UserImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call(
-      {@JsonKey(name: 'name') String name,
-      @JsonKey(name: 'avatarUrl') String avatarUrl});
+  $Res call({String name, String avatarUrl});
 }
 
 /// @nodoc
@@ -118,18 +112,14 @@ class __$$UserImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$UserImpl implements _User {
-  const _$UserImpl(
-      {@JsonKey(name: 'name') required this.name,
-      @JsonKey(name: 'avatarUrl') required this.avatarUrl});
+  const _$UserImpl({required this.name, required this.avatarUrl});
 
   factory _$UserImpl.fromJson(Map<String, dynamic> json) =>
       _$$UserImplFromJson(json);
 
   @override
-  @JsonKey(name: 'name')
   final String name;
   @override
-  @JsonKey(name: 'avatarUrl')
   final String avatarUrl;
 
   @override
@@ -169,17 +159,14 @@ class _$UserImpl implements _User {
 
 abstract class _User implements User {
   const factory _User(
-          {@JsonKey(name: 'name') required final String name,
-          @JsonKey(name: 'avatarUrl') required final String avatarUrl}) =
-      _$UserImpl;
+      {required final String name,
+      required final String avatarUrl}) = _$UserImpl;
 
   factory _User.fromJson(Map<String, dynamic> json) = _$UserImpl.fromJson;
 
   @override
-  @JsonKey(name: 'name')
   String get name;
   @override
-  @JsonKey(name: 'avatarUrl')
   String get avatarUrl;
 
   /// Create a copy of User

@@ -1,4 +1,4 @@
-import 'package:github_graphql_app/home/model/github_repository/github_repository.dart';
+import 'package:github_graphql_app/repos/model/github_repository/github_repository.dart';
 import 'package:flutter/material.dart';
 
 class RepoTile extends StatelessWidget {

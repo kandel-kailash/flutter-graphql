@@ -26,11 +26,11 @@ class Root extends StatelessWidget {
       onGenerateTitle: (BuildContext context) =>
           AppLocalizations.of(context)!.appTitle,
       builder: (context, child) {
-        ArgumentError.checkNotNull('The child must not be null');
+        final navigatorChild = ArgumentError.checkNotNull(child, 'child');
 
         return AppWrapper(
           appRouter: appRouter,
-          child: child!,
+          child: navigatorChild,
         );
       },
       debugShowCheckedModeBanner: false,
