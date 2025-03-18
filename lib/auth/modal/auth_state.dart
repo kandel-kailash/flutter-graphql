@@ -1,5 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:github_graphql_app/auth/modal/auth_failure.dart';
+
 part 'auth_state.freezed.dart';
 
 @freezed

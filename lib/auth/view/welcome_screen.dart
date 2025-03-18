@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -8,8 +9,8 @@ import 'package:github_graphql_app/auth/view/widgets/github_logo.dart';
 import 'package:github_graphql_app/auth/view/widgets/welcome_screen_header.dart';
 import 'package:github_graphql_app/auth/view_modal/auth_cubit.dart';
 import 'package:github_graphql_app/core/routes/app_route_config.dart';
-import 'package:github_graphql_app/core/shared/device_type.dart';
-import 'package:github_graphql_app/core/shared/screen_width.dart';
+import 'package:github_graphql_app/core/shared/enums/device_type.dart';
+import 'package:github_graphql_app/core/shared/enums/screen_width.dart';
 import 'package:github_graphql_app/core/theme/default_colors.dart';
 import 'package:github_graphql_app/core/views/responsive_view.dart';
 import 'package:go_router/go_router.dart';
@@ -20,8 +21,10 @@ sealed class WelcomeScreenView extends StatelessWidget
 
   @override
   factory WelcomeScreenView.responsive(BuildContext context) {
-    if (DeviceType.isMobile) {
-      SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+    if (!kIsWeb) {
+      if (DeviceType.isMobile) {
+        SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+      }
     }
 
     return switch (ScreenWidth.from(context)) {
@@ -95,14 +98,19 @@ class _SignInButton extends StatelessWidget {
         context.read<AuthCubit>().signIn(
           (authorizationUri) {
             final completer = Completer<Uri>();
-            context.goNamed(
-              AppRouteConfig.auth.name,
-              extra: AuthScreenRouteInfo(
-                authUri: authorizationUri,
-                onAuthCodeRedirectAttempt: (redirectedUrl) =>
-                    completer.complete(redirectedUrl),
-              ),
-            );
+
+            if (kIsWeb) {
+              // TODO @kailash: Open the auth in a new tab for web
+            } else {
+              context.goNamed(
+                AppRouteConfig.auth.name,
+                extra: AuthScreenRouteInfo(
+                  authUri: authorizationUri,
+                  onAuthCodeRedirectAttempt: (redirectedUrl) =>
+                      completer.complete(redirectedUrl),
+                ),
+              );
+            }
 
             return completer.future;
           },
@@ -144,10 +152,7 @@ class _WelcomeScreenTabletView extends WelcomeScreenView {
 }
 
 class _WelcomeScreenLandscapeView extends StatefulWidget {
-  const _WelcomeScreenLandscapeView({
-    super.key,
-    required this.mediaQuery,
-  });
+  const _WelcomeScreenLandscapeView({required this.mediaQuery});
 
   final MediaQueryData mediaQuery;
 

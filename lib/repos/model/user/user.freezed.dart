@@ -20,7 +20,9 @@ User _$UserFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$User {
+  String get id => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
+  String get login => throw _privateConstructorUsedError;
   String get avatarUrl => throw _privateConstructorUsedError;
 
   /// Serializes this User to a JSON map.
@@ -37,7 +39,7 @@ abstract class $UserCopyWith<$Res> {
   factory $UserCopyWith(User value, $Res Function(User) then) =
       _$UserCopyWithImpl<$Res, User>;
   @useResult
-  $Res call({String name, String avatarUrl});
+  $Res call({String id, String name, String login, String avatarUrl});
 }
 
 /// @nodoc
@@ -55,13 +57,23 @@ class _$UserCopyWithImpl<$Res, $Val extends User>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? id = null,
     Object? name = null,
+    Object? login = null,
     Object? avatarUrl = null,
   }) {
     return _then(_value.copyWith(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
       name: null == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
+              as String,
+      login: null == login
+          ? _value.login
+          : login // ignore: cast_nullable_to_non_nullable
               as String,
       avatarUrl: null == avatarUrl
           ? _value.avatarUrl
@@ -78,7 +90,7 @@ abstract class _$$UserImplCopyWith<$Res> implements $UserCopyWith<$Res> {
       __$$UserImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String name, String avatarUrl});
+  $Res call({String id, String name, String login, String avatarUrl});
 }
 
 /// @nodoc
@@ -93,13 +105,23 @@ class __$$UserImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? id = null,
     Object? name = null,
+    Object? login = null,
     Object? avatarUrl = null,
   }) {
     return _then(_$UserImpl(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
       name: null == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
+              as String,
+      login: null == login
+          ? _value.login
+          : login // ignore: cast_nullable_to_non_nullable
               as String,
       avatarUrl: null == avatarUrl
           ? _value.avatarUrl
@@ -112,19 +134,27 @@ class __$$UserImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$UserImpl implements _User {
-  const _$UserImpl({required this.name, required this.avatarUrl});
+  const _$UserImpl(
+      {required this.id,
+      required this.name,
+      required this.login,
+      required this.avatarUrl});
 
   factory _$UserImpl.fromJson(Map<String, dynamic> json) =>
       _$$UserImplFromJson(json);
 
   @override
+  final String id;
+  @override
   final String name;
+  @override
+  final String login;
   @override
   final String avatarUrl;
 
   @override
   String toString() {
-    return 'User(name: $name, avatarUrl: $avatarUrl)';
+    return 'User(id: $id, name: $name, login: $login, avatarUrl: $avatarUrl)';
   }
 
   @override
@@ -132,14 +162,16 @@ class _$UserImpl implements _User {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$UserImpl &&
+            (identical(other.id, id) || other.id == id) &&
             (identical(other.name, name) || other.name == name) &&
+            (identical(other.login, login) || other.login == login) &&
             (identical(other.avatarUrl, avatarUrl) ||
                 other.avatarUrl == avatarUrl));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, name, avatarUrl);
+  int get hashCode => Object.hash(runtimeType, id, name, login, avatarUrl);
 
   /// Create a copy of User
   /// with the given fields replaced by the non-null parameter values.
@@ -159,13 +191,19 @@ class _$UserImpl implements _User {
 
 abstract class _User implements User {
   const factory _User(
-      {required final String name,
+      {required final String id,
+      required final String name,
+      required final String login,
       required final String avatarUrl}) = _$UserImpl;
 
   factory _User.fromJson(Map<String, dynamic> json) = _$UserImpl.fromJson;
 
   @override
+  String get id;
+  @override
   String get name;
+  @override
+  String get login;
   @override
   String get avatarUrl;
 

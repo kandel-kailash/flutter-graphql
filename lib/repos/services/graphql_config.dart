@@ -1,42 +1,40 @@
-import 'package:github_graphql_app/auth/services/authentication/github_authenticator.dart';
+import 'package:flutter/widgets.dart';
 import 'package:github_graphql_app/core/constants/urls.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:oauth2/oauth2.dart';
 import 'package:path_provider/path_provider.dart';
 
-class GraphQLConfig {
-  final GithubAuthenticator _githubAuthenticator;
+class GraphQLConfig extends ChangeNotifier {
+  GraphQLConfig._();
 
-  static const cacheStorageName = 'github_cache';
+  factory GraphQLConfig() {
+    if (_instance != null) return _instance!;
 
-  GraphQLConfig(this._githubAuthenticator);
+    _instance = GraphQLConfig._();
+    return _instance!;
+  }
+
+  static GraphQLConfig? _instance;
+
+  static const _cacheStorageName = 'github_cache';
+
+  bool _isInitialized = false;
+
+  GraphQLClient? _client;
+
+  bool get isInitialized => _isInitialized;
 
   HttpLink get _httpLink => HttpLink(graphQLEndpoint);
 
-  Future<AuthLink?> _getAuthLink() async {
-    final credentials = await _githubAuthenticator.getSignedInCredentials();
+  GraphQLClient get client =>
+      _client ?? (throw Exception('Client not initialized'));
 
-    if (credentials == null) {
-      return null;
-    }
+  Link _getLink(Credentials credentials) {
+    final authLink = AuthLink(
+      getToken: () async => 'Bearer ${credentials.accessToken}',
+    );
 
-    return AuthLink(getToken: () async => 'Bearer ${credentials.accessToken}');
-  }
-
-  Future<Link?> _getLink() async {
-    final authLink = await _getAuthLink();
-
-    if (authLink == null) {
-      return null;
-    }
-
-    final link = authLink.concat(_httpLink);
-
-    /// subscriptions must be split otherwise `HttpLink` will swallow them
-    // return Link.split(
-    //   (request) => request.isSubscription,
-    //   link,
-    //   WebSocketLink(graphQLEndpoint),
-    // );
+    final Link link = authLink.concat(_httpLink);
 
     return link;
   }
@@ -47,74 +45,33 @@ class GraphQLConfig {
       final cacheDirectoryPath = cacheDirectory.path;
 
       return HiveStore.open(
-        boxName: cacheStorageName,
+        boxName: _cacheStorageName,
         path: cacheDirectoryPath,
       );
     } on MissingPlatformDirectoryException {
       return HiveStore.open(
-        boxName: cacheStorageName,
+        boxName: _cacheStorageName,
       );
     }
   }
 
-  Future<GraphQLClient?> getClient() async {
-    final link = await _getLink();
-    if (link == null) {
-      return null;
-    }
+  Future<GraphQLClient> initializeClient(Credentials credentials) async {
+    final Link link = _getLink(credentials);
 
     final cache = await _getCacheStorage();
     final gqlCache = GraphQLCache(store: cache);
 
-    return GraphQLClient(link: link, cache: gqlCache);
+    _client = GraphQLClient(
+      link: link,
+      cache: gqlCache,
+    );
+
+    _isInitialized = true;
+
+    notifyListeners();
+
+    return _client!;
   }
+
+  void resetClient() => _client = null;
 }
-
-const readRepositories = r'''
-  query ReadRepositories($user: String = "josevalim", $nRepos: Int!, $after: String){ 
-    user(login: $user) { 
-      id
-      name
-      avatarUrl
-      repositories(first: $nRepos, after: $after) {
-        pageInfo {
-          hasNextPage
-          endCursor
-        }
-        edges {
-          node {
-            id
-            name
-            stargazerCount
-          }
-        }
-      } 
-    }
-  }
-''';
-
-const searchRepos = r'''
-  query SearchRepositories($nRepositories: Int!, $query: String!, $cursor: String) {
-    search(last: $nRepositories, query: $query, type: REPOSITORY, after: $cursor) {
-      nodes {
-        __typename
-        ... on Repository {
-          name
-          shortDescriptionHTML
-          viewerHasStarred
-          stargazers {
-            totalCount
-          }
-          forks {
-            totalCount
-          }
-          updatedAt
-        }
-      }
-      pageInfo {
-        endCursor
-        hasNextPage
-      }
-    }
-  }
-''';

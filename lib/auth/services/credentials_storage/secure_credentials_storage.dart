@@ -1,11 +1,12 @@
+import 'package:flutter/widgets.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:github_graphql_app/auth/services/credentials_storage/credentials_storage.dart';
 import 'package:oauth2/oauth2.dart';
 
 class SecureCredentialStorage implements CredentialsStorage {
-  final FlutterSecureStorage _storage;
-
   SecureCredentialStorage(this._storage);
+
+  final FlutterSecureStorage _storage;
 
   static const _key = 'oauth2_credentials';
 
@@ -17,15 +18,25 @@ class SecureCredentialStorage implements CredentialsStorage {
       return _cachedCredentials;
     }
 
-    final jsonCreds = await _storage.read(key: _key);
-
-    if (jsonCreds == null) {
-      return null;
-    }
-
     try {
+      final jsonCreds = await _storage.read(key: _key);
+
+      if (jsonCreds == null) {
+        return null;
+      }
+
       return _cachedCredentials = Credentials.fromJson(jsonCreds);
-    } on FormatException {
+    } on FormatException catch (error, stackTrace) {
+      debugPrintStack(
+        stackTrace: stackTrace,
+        label: 'SecureCredentialStorage.read: $error',
+      );
+      return null;
+    } catch (error, stackTrace) {
+      debugPrintStack(
+        stackTrace: stackTrace,
+        label: 'SecureCredentialStorage.read: $error',
+      );
       return null;
     }
   }

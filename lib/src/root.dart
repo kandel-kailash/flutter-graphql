@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:github_graphql_app/src/app_wrapper.dart';
+import 'package:github_graphql_app/src/localization/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 
 /// The Widget that configures your application.

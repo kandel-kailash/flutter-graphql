@@ -1,17 +1,15 @@
-import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/services.dart';
 import 'package:github_graphql_app/auth/modal/auth_failure.dart';
 import 'package:github_graphql_app/auth/services/credentials_storage/credentials_storage.dart';
 import 'package:github_graphql_app/core/constants/urls.dart';
 import 'package:github_graphql_app/core/extensions/dio_extensions.dart';
-import 'package:github_graphql_app/core/shared/encoders.dart';
+import 'package:github_graphql_app/core/shared/services/encoders.dart';
+import 'package:github_graphql_app/core/utils/either.dart';
 import 'package:http/http.dart' as http;
 import 'package:oauth2/oauth2.dart';
 
-///
 /// New [ HttpClient ] with [ Accept : application/json] header
-///
 class GithubOAuthHttpClient extends http.BaseClient {
   final httpClient = http.Client();
 
@@ -23,10 +21,13 @@ class GithubOAuthHttpClient extends http.BaseClient {
 }
 
 class GithubAuthenticator {
-  final CredentialsStorage _credentialsStorage;
-  final Dio _dio;
+  GithubAuthenticator(
+    this._dio,
+    this._credentialsStorage,
+  );
 
-  GithubAuthenticator(this._credentialsStorage, this._dio);
+  final Dio _dio;
+  final CredentialsStorage _credentialsStorage;
 
   static const _clientId = String.fromEnvironment('clientId');
   static const _clientSecret = String.fromEnvironment('clientSecret');
@@ -46,10 +47,6 @@ class GithubAuthenticator {
     }
   }
 
-  Future<bool> isSignedIn() => getSignedInCredentials().then(
-        (credentials) => credentials?.isExpired == false,
-      );
-
   AuthorizationCodeGrant get grant => AuthorizationCodeGrant(
         _clientId,
         Uri.parse(authEndpoint),
@@ -64,21 +61,22 @@ class GithubAuthenticator {
         scopes: scopes,
       );
 
-  Future<Either<AuthFailure, Unit>> handleAuthorizationResponse(
+  Future<Either<AuthFailure, Credentials>> handleAuthorizationResponse(
     AuthorizationCodeGrant grant,
     Map<String, String> queryParams,
   ) async {
     try {
       final httpClient = await grant.handleAuthorizationResponse(queryParams);
+      final credentials = httpClient.credentials;
 
-      await _credentialsStorage.save(httpClient.credentials);
-      return right(unit);
+      await _credentialsStorage.save(credentials);
+      return EitherX.right(credentials);
     } on FormatException {
-      return left(const AuthFailure.server());
+      return EitherX.left(const AuthFailure.server());
     } on AuthorizationException catch (e) {
-      return left(AuthFailure.server('${e.error}: ${e.description}'));
+      return EitherX.left(AuthFailure.server('${e.error}: ${e.description}'));
     } on PlatformException {
-      return left(const AuthFailure.storage());
+      return EitherX.left(const AuthFailure.storage());
     }
   }
 
@@ -109,9 +107,9 @@ class GithubAuthenticator {
       }
 
       await _credentialsStorage.clear();
-      return right(unit);
+      return EitherX.right(const Unit());
     } on PlatformException {
-      return left(const AuthFailure.storage());
+      return EitherX.left(const AuthFailure.storage());
     }
   }
 }

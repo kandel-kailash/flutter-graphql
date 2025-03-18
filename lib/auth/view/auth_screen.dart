@@ -22,9 +22,10 @@ class AuthScreen extends StatelessWidget {
         leading: BackButton(
           onPressed: () => context.goNamed(AppRouteConfig.welcome.name),
         ),
+        centerTitle: true,
         title: const Text('Github Auth'),
       ),
-      body: AuthBody(
+      body: _AuthBody(
         authUrl: authUrl,
         onAuthCodeRedirectAttempt: onAuthCodeRedirectAttempt,
       ),
@@ -32,9 +33,8 @@ class AuthScreen extends StatelessWidget {
   }
 }
 
-class AuthBody extends StatelessWidget {
-  const AuthBody({
-    super.key,
+class _AuthBody extends StatelessWidget {
+  const _AuthBody({
     required this.authUrl,
     required this.onAuthCodeRedirectAttempt,
   });
