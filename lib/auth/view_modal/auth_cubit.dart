@@ -5,7 +5,6 @@ import 'package:flutter/widgets.dart';
 import 'package:github_graphql_app/auth/modal/auth_state.dart';
 import 'package:github_graphql_app/auth/services/authentication/github_authenticator.dart';
 import 'package:github_graphql_app/core/constants/queries.dart';
-import 'package:github_graphql_app/core/utils/either.dart';
 import 'package:github_graphql_app/repos/model/user/user.dart';
 import 'package:github_graphql_app/repos/services/graphql_config.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';

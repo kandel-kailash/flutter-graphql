@@ -1,26 +1,30 @@
 typedef Unit = Object;
 
-typedef Either<L, R> = ({L? left, R? right});
+sealed class Either<L, R> {
+  const Either();
 
-extension EitherX<L, R> on Either<L, R> {
-  static Either<L, R> left<L, R>(L left) => (
-        left: left,
-        right: null,
-      );
+  factory Either.left(L left) = Left<L, R>;
 
-  static Either<L, R> right<L, R>(R right) => (
-        left: null,
-        right: right,
-      );
+  factory Either.right(R right) = Right<L, R>;
 
   T fold<T>({
     required T Function(L left) onLeft,
     required T Function(R right) onRight,
-  }) {
-    if (this.left != null) return onLeft(this.left as L);
+  }) =>
+      switch (this) {
+        Left<L, R>(:final L left) => onLeft(left),
+        Right<L, R>(:final R right) => onRight(right)
+      };
+}
 
-    if (this.right != null) return onRight(this.right as R);
+final class Left<L, R> extends Either<L, R> {
+  const Left(this.left);
 
-    throw 'Unknown type';
-  }
+  final L left;
+}
+
+final class Right<L, R> extends Either<L, R> {
+  const Right(this.right);
+
+  final R right;
 }

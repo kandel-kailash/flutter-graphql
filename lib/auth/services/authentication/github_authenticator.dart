@@ -70,13 +70,13 @@ class GithubAuthenticator {
       final credentials = httpClient.credentials;
 
       await _credentialsStorage.save(credentials);
-      return EitherX.right(credentials);
+      return Right(credentials);
     } on FormatException {
-      return EitherX.left(const AuthFailure.server());
+      return const Left(AuthFailure.server());
     } on AuthorizationException catch (e) {
-      return EitherX.left(AuthFailure.server('${e.error}: ${e.description}'));
+      return Left(AuthFailure.server('${e.error}: ${e.description}'));
     } on PlatformException {
-      return EitherX.left(const AuthFailure.storage());
+      return const Left(AuthFailure.storage());
     }
   }
 
@@ -107,9 +107,9 @@ class GithubAuthenticator {
       }
 
       await _credentialsStorage.clear();
-      return EitherX.right(const Unit());
+      return const Right(Unit());
     } on PlatformException {
-      return EitherX.left(const AuthFailure.storage());
+      return const Left(AuthFailure.storage());
     }
   }
 }
