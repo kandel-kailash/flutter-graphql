@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:github_graphql_app/auth/view_modal/auth_cubit.dart';
+import 'package:github_graphql_app/core/routes/app_route_config.dart';
 import 'package:github_graphql_app/repos/model/state/list_view_state.dart';
 import 'package:github_graphql_app/repos/model/state/search_view_result.dart';
 import 'package:github_graphql_app/repos/model/state/search_view_state.dart';
 import 'package:github_graphql_app/repos/model/user/user.dart';
 import 'package:github_graphql_app/repos/view_modal/list_view_cubit.dart';
 import 'package:github_graphql_app/repos/view_modal/search_view_cubit.dart';
+import 'package:go_router/go_router.dart';
 
 class CustomAppBar extends PreferredSize {
   const CustomAppBar({
@@ -27,11 +29,11 @@ class _CustomAppBarWidget extends StatefulWidget {
 class _CustomAppBarWidgetState extends State<_CustomAppBarWidget> {
   final SearchController _searchController = SearchController();
 
-  void _onTap() {
+  void _onTapSearch() {
     showDialog(
       context: context,
       builder: (_) {
-        final List<Widget> suggestions = [];
+        List<Widget> suggestions = [];
 
         return Dialog(
           child: BlocBuilder<SearchViewCubit, SearchViewState>(
@@ -39,40 +41,14 @@ class _CustomAppBarWidgetState extends State<_CustomAppBarWidget> {
             builder: (_, state) {
               switch (state) {
                 case SearchViewLoadingState():
-                  Widget? lastSuggestion;
-
-                  try {
-                    suggestions.asMap().forEach((index, widget) {
-                      final nextSuggestion = suggestions[index + 1];
-
-                      if (index == 0) {
-                        lastSuggestion = suggestions[0];
-                        suggestions[0] = const LinearProgressIndicator();
-                        suggestions[1] = lastSuggestion!;
-
-                        lastSuggestion = nextSuggestion;
-
-                        return;
-                      }
-
-                      suggestions[index + 1] = lastSuggestion!;
-                      lastSuggestion = nextSuggestion;
-
-                      return;
-                    });
-                    // TODO @kailash: Is this a valid solution?
-                  } on RangeError catch (error, stackTrace) {
-                    debugPrintStack(
-                      stackTrace: stackTrace,
-                      label: 'CustomAppBar < Line 144 >: $error',
-                    );
-
-                    if (lastSuggestion != null) {
-                      suggestions.add(lastSuggestion!);
-                    }
-                  }
+                  suggestions = [
+                    const LinearProgressIndicator(),
+                    ...suggestions,
+                  ];
 
                 case SearchViewLoadedState(:List<SearchViewResult> result):
+                  result.removeWhere((e) => e.loginName.isEmpty);
+
                   suggestions
                     ..clear()
                     ..addAll(
@@ -84,10 +60,11 @@ class _CustomAppBarWidgetState extends State<_CustomAppBarWidget> {
                                   User.fromSearchViewResult(searchViewResult),
                                 );
 
-                            Navigator.of(context).pop();
-
                             _searchController.text = '';
                             _searchController.closeView(searchViewResult.name);
+
+                            Navigator.of(context).pop();
+                            context.goNamed(AppRouteConfig.repos.name);
                             // SearchAnchor.
                           },
                         ),
@@ -116,74 +93,169 @@ class _CustomAppBarWidgetState extends State<_CustomAppBarWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 20,
-        vertical: 10,
-      ),
-      child: Stack(
-        alignment: AlignmentDirectional.centerStart,
-        children: [
-          Positioned(
-            left: 40,
-            right: 0,
-            child: SearchBar(
-              onTap: _onTap,
-              padding: const WidgetStatePropertyAll(
-                EdgeInsets.only(left: 40, right: 20),
-              ),
-              hintText: 'Search users',
-              trailing: [
-                const SizedBox(width: 8),
-                IconButton(
-                  tooltip: 'Sign out',
-                  onPressed: () async {
-                    showDialog(
-                      context: context,
-                      builder: (context) {
-                        return const SimpleDialog(
-                          children: [
-                            SizedBox(
-                              height: 100,
-                              child: Center(
-                                child: CircularProgressIndicator(),
+    return Material(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 24,
+          vertical: 12,
+        ),
+        child: TweenAnimationBuilder(
+          tween: Tween<double>(
+            begin: 0.0,
+            end: 1.0,
+          ),
+          duration: const Duration(seconds: 1),
+          curve: Curves.easeInOut,
+          builder: (_, opacity, child) {
+            return Opacity(
+              opacity: opacity,
+              child: child,
+            );
+          },
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            spacing: 20,
+            children: [
+              Expanded(
+                child: BlocBuilder<ListViewCubit, ListViewState>(
+                  builder: (context, state) {
+                    User? currentUser = ListViewCubit.currentOwner;
+
+                    if (state case Loaded(:User user)) {
+                      if (currentUser != user) {
+                        currentUser = user;
+                      }
+                    }
+
+                    return Stack(
+                      children: [
+                        Positioned(
+                          top: 0,
+                          left: 60,
+                          right: 0,
+                          bottom: 0,
+                          child: Container(
+                            margin: const EdgeInsets.symmetric(vertical: 12),
+                            padding: const EdgeInsets.only(
+                              left: 40,
+                              right: 20,
+                            ),
+                            alignment: Alignment.centerLeft,
+                            decoration: BoxDecoration(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .surfaceContainerLow,
+                              boxShadow: [
+                                BoxShadow(
+                                  offset: const Offset(4, 4),
+                                  color: Colors.grey[350]!,
+                                  blurRadius: 8,
+                                ),
+                              ],
+                              borderRadius: const BorderRadius.only(
+                                topRight: Radius.circular(20),
+                                bottomRight: Radius.circular(20),
                               ),
                             ),
-                            SizedBox(height: 8),
-                            Text('Signing out...'),
-                          ],
-                        );
-                      },
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    currentUser?.name ?? '',
+                                    maxLines: 1,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headlineSmall,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                IconButton(
+                                  onPressed: _onTapSearch,
+                                  icon: const Icon(Icons.search),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        CircleAvatar(
+                          radius: 40,
+                          backgroundImage: currentUser == null
+                              ? null
+                              : NetworkImage(currentUser.avatarUrl),
+                          child: currentUser != null
+                              ? null
+                              : const Icon(Icons.person),
+                        ),
+                      ],
                     );
-
-                    await context.read<AuthCubit>().signOut();
                   },
-                  icon: const Icon(Icons.logout_rounded),
                 ),
-              ],
-            ),
+              ),
+              _MenuContainer(
+                child: Row(
+                  spacing: 16,
+                  children: [
+                    IconButton(
+                      onPressed: () {},
+                      icon: const Icon(Icons.settings),
+                    ),
+                    IconButton(
+                      tooltip: 'Sign out',
+                      onPressed: () async {
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return const SimpleDialog(
+                              children: [
+                                SizedBox(
+                                  height: 100,
+                                  child: Center(
+                                    child: CircularProgressIndicator(),
+                                  ),
+                                ),
+                                SizedBox(height: 8),
+                                Text('Signing out...'),
+                              ],
+                            );
+                          },
+                        );
+
+                        await context.read<AuthCubit>().signOut();
+                      },
+                      icon: const Icon(Icons.logout_rounded),
+                    ),
+                  ],
+                ),
+              )
+            ],
           ),
-          BlocBuilder<ListViewCubit, ListViewState>(
-            builder: (context, state) {
-              User? currentUser = ListViewCubit.currentOwner;
-
-              if (state case Loaded(:User user)) {
-                if (currentUser != user) {
-                  currentUser = user;
-                }
-              }
-
-              return CircleAvatar(
-                radius: 40,
-                backgroundImage: currentUser == null
-                    ? null
-                    : NetworkImage(currentUser.avatarUrl),
-                child: currentUser != null ? null : const Icon(Icons.person),
-              );
-            },
-          )
-        ],
+        ),
       ),
+    );
+  }
+}
+
+class _MenuContainer extends StatelessWidget {
+  const _MenuContainer({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceContainerLowest,
+        boxShadow: [
+          BoxShadow(
+            offset: const Offset(4, 4),
+            color: Colors.grey[350]!,
+            blurRadius: 8,
+          ),
+        ],
+        borderRadius: const BorderRadius.all(Radius.circular(20)),
+      ),
+      child: child,
     );
   }
 }

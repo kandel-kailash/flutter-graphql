@@ -39,8 +39,9 @@ class RepoDetailsView extends StatelessWidget {
 
     final Orientation orientation = MediaQuery.of(context).orientation;
 
-    return switch (orientation) {
-      Orientation.portrait => Scaffold(
+    switch (orientation) {
+      case Orientation.portrait:
+        return Scaffold(
           appBar: AppBar(
             automaticallyImplyLeading: true,
             title: Text(repositoryName),
@@ -49,9 +50,26 @@ class RepoDetailsView extends StatelessWidget {
             ),
           ),
           body: detailsView,
-        ),
-      Orientation.landscape => detailsView,
-    };
+        );
+      case Orientation.landscape:
+        final isDetailsRoute =
+            GoRouter.of(context).state.name == AppRouteConfig.details.name;
+
+        // Wait for the details view to be rendered before navigating to the 
+        // details sub-route in the landscape mode.
+        WidgetsBinding.instance.addPostFrameCallback(
+          (_) {
+            if (isDetailsRoute) {
+              context.goNamed(
+                AppRouteConfig.detailsSubRouteName,
+                pathParameters: {'repoName': repositoryName},
+              );
+            }
+          },
+        );
+
+        return isDetailsRoute ? const SizedBox() : detailsView;
+    }
   }
 }
 
@@ -84,23 +102,37 @@ class _ReadMeMarkDownView extends StatelessWidget {
           final String? readme = result.data?['repository']?['object']?['text'];
 
           return readme == null
-              ? Center(
-                  child: Text(repositoryName),
-                )
-              : Markdown(
-                  data: readme,
-                  onTapLink: (
-                    String text,
-                    String? href,
-                    String title,
-                  ) async {
-                    if (href != null) {
-                      final uri = Uri.parse(href);
+              ? Center(child: Text(repositoryName))
+              : TweenAnimationBuilder<double>(
+                  tween: Tween<double>(
+                    begin: 0.0,
+                    end: result.isLoading ? 0.0 : 1.0,
+                  ),
+                  curve: Curves.easeInCirc,
+                  duration: const Duration(milliseconds: 300),
+                  builder: (_, opacity, __) {
+                    return Opacity(
+                      opacity: opacity,
+                      child: Transform.scale(
+                        scale: opacity,
+                        child: Markdown(
+                          data: readme,
+                          onTapLink: (
+                            String text,
+                            String? href,
+                            String title,
+                          ) async {
+                            if (href != null) {
+                              final uri = Uri.parse(href);
 
-                      if (await canLaunchUrl(uri)) {
-                        await launchUrl(uri);
-                      }
-                    }
+                              if (await canLaunchUrl(uri)) {
+                                await launchUrl(uri);
+                              }
+                            }
+                          },
+                        ),
+                      ),
+                    );
                   },
                 );
         },
