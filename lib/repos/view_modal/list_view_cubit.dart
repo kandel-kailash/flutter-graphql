@@ -19,6 +19,7 @@ class ListViewCubit extends Cubit<ListViewState> {
 
   bool hasNextPage;
   String? endCursor;
+  int selectedIndex = -1;
 
   GraphQLClient get _graphQLClient => GraphQLConfig().client;
 
@@ -55,10 +56,21 @@ class ListViewCubit extends Cubit<ListViewState> {
   void _resetState() {
     endCursor = '';
     hasNextPage = true;
+    selectedIndex = -1;
 
     _repos.clear();
 
     emit(const ListViewState.reset());
+  }
+
+  void selectRepo(int index) {
+    if (index < 0 || index >= _repos.length) {
+      throw RangeError(
+        'Index $index is out of range for repos list of length ${_repos.length}',
+      );
+    }
+
+    selectedIndex = index;
   }
 
   Future<void> fetchUserData([User? user]) async {

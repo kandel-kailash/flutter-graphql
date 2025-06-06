@@ -30,7 +30,7 @@ sealed class WelcomeScreenView extends StatelessWidget
     return switch (ScreenWidth.from(context)) {
       ScreenWidth.phone => const _WelcomeScreenPortraitView(),
       ScreenWidth.tablet => const _WelcomeScreenTabletView(),
-      ScreenWidth.desktop => throw UnimplementedError(),
+      ScreenWidth.desktop => const _WelcomeScreenTabletView(),
     };
   }
 }
@@ -100,7 +100,7 @@ class _SignInButton extends StatelessWidget {
             final completer = Completer<Uri>();
 
             if (kIsWeb) {
-              // TODO @kailash: Open the auth in a new tab for web
+              // TODO @kailash: Make it work on web
             } else {
               context.goNamed(
                 AppRouteConfig.auth.name,
@@ -222,9 +222,7 @@ class _WelcomeScreenLandscapeViewState
                   const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Expanded(
-                        child: _AnimatedGithubLogo(),
-                      ),
+                      Expanded(child: _AnimatedGithubLogo()),
                       Expanded(
                         child: Center(child: _SignInButton()),
                       ),

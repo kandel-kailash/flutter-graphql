@@ -8,10 +8,12 @@ class RepoTile extends StatelessWidget {
     super.key,
     required this.repo,
     required this.onTap,
+    required this.isSelected,
   });
 
   final GithubRepository repo;
   final ValueChanged<GithubRepository> onTap;
+  final bool isSelected;
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +56,7 @@ class RepoTile extends StatelessWidget {
                     Flexible(
                       child: Ink(
                         decoration: BoxDecoration(
-                          color: Colors.black,
+                          color: isSelected ? Colors.blue : Colors.black,
                           borderRadius: BorderRadius.circular(10),
                           boxShadow: [
                             BoxShadow(
@@ -96,6 +98,9 @@ class RepoTile extends StatelessWidget {
                             blurRadius: 3,
                           )
                         ],
+                        border: isSelected
+                            ? Border.all(color: Colors.blueAccent, width: 1)
+                            : null,
                       ),
                       child: Row(
                         children: [
