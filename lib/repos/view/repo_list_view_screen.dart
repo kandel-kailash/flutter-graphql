@@ -64,16 +64,11 @@ class _RepoListTabletView extends RepoListView {
   }
 }
 
-class _RepoListLandscapeView extends StatefulWidget {
+class _RepoListLandscapeView extends StatelessWidget {
   const _RepoListLandscapeView({required this.child});
 
   final Widget child;
 
-  @override
-  State<_RepoListLandscapeView> createState() => _RepoListLandscapeViewState();
-}
-
-class _RepoListLandscapeViewState extends State<_RepoListLandscapeView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -112,7 +107,7 @@ class _RepoListLandscapeViewState extends State<_RepoListLandscapeView> {
                 ),
               ),
             ),
-            Expanded(child: widget.child),
+            Expanded(child: child),
           ],
         ),
       ),
@@ -139,6 +134,8 @@ class _RepoListViewState extends State<_RepoListView> {
         }
       },
     );
+
+  int get _selectedRepoIndex => context.read<ListViewCubit>().selectedIndex;
 
   @override
   Widget build(BuildContext context) {
@@ -173,7 +170,11 @@ class _RepoListViewState extends State<_RepoListView> {
 
                   return RepoTile(
                     repo: repo,
-                    onTap: widget.onTapRepoItem,
+                    onTap: (repo) {
+                      context.read<ListViewCubit>().selectRepo(index);
+                      widget.onTapRepoItem(repo);
+                    },
+                    isSelected: index == _selectedRepoIndex,
                   );
                 },
               );

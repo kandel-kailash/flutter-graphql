@@ -196,10 +196,6 @@ class _CustomAppBarWidgetState extends State<_CustomAppBarWidget> {
                   spacing: 16,
                   children: [
                     IconButton(
-                      onPressed: () {},
-                      icon: const Icon(Icons.settings),
-                    ),
-                    IconButton(
                       tooltip: 'Sign out',
                       onPressed: () async {
                         showDialog(
