@@ -5,10 +5,7 @@ enum ScreenWidth {
   tablet._(minWidth: 601, maxWidth: 1280),
   desktop._(minWidth: 1281, maxWidth: double.infinity);
 
-  const ScreenWidth._({
-    required this.minWidth,
-    required this.maxWidth,
-  });
+  const ScreenWidth._({required this.minWidth, required this.maxWidth});
 
   factory ScreenWidth.fromLogicalWidth(double logicalWidth) =>
       values.firstWhere(

@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:github_graphql_app/localization/app_localizations.dart';
 import 'package:github_graphql_app/src/app_wrapper.dart';
-import 'package:github_graphql_app/src/localization/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 
 /// The Widget that configures your application.
 class Root extends StatelessWidget {
-  const Root({
-    super.key,
-    required this.appRouter,
-  });
+  const Root({super.key, required this.appRouter});
 
   final GoRouter appRouter;
 
@@ -28,10 +25,7 @@ class Root extends StatelessWidget {
       builder: (context, child) {
         final navigatorChild = ArgumentError.checkNotNull(child, 'child');
 
-        return AppWrapper(
-          appRouter: appRouter,
-          child: navigatorChild,
-        );
+        return AppWrapper(appRouter: appRouter, child: navigatorChild);
       },
       debugShowCheckedModeBanner: false,
     );

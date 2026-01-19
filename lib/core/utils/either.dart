@@ -10,11 +10,10 @@ sealed class Either<L, R> {
   T fold<T>({
     required T Function(L left) onLeft,
     required T Function(R right) onRight,
-  }) =>
-      switch (this) {
-        Left<L, R>(:final L left) => onLeft(left),
-        Right<L, R>(:final R right) => onRight(right)
-      };
+  }) => switch (this) {
+    Left<L, R>(:final L left) => onLeft(left),
+    Right<L, R>(:final R right) => onRight(right),
+  };
 }
 
 final class Left<L, R> extends Either<L, R> {

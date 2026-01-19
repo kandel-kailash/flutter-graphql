@@ -1,0 +1,130 @@
+import 'dart:math';
+
+import 'package:flutter/material.dart';
+import 'package:github_graphql_app/src/repos/model/github_repository/github_repository.dart';
+
+class RepoTile extends StatelessWidget {
+  const RepoTile({
+    super.key,
+    required this.repo,
+    required this.onTap,
+    required this.isSelected,
+  });
+
+  final GithubRepository repo;
+  final ValueChanged<GithubRepository> onTap;
+  final bool isSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    return TweenAnimationBuilder(
+      tween: Tween<double>(begin: pi * 3 / 2, end: 2 * pi),
+      duration: const Duration(milliseconds: 500),
+      curve: Curves.easeInOut,
+      builder: (_, radians, child) {
+        return Transform(
+          alignment: Alignment.centerLeft,
+          transform: Matrix4.identity()..rotateY(-radians),
+          child: child,
+        );
+      },
+      child: InkWell(
+        onTap: () => onTap(repo),
+        customBorder: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                String.fromCharCodes(Runes('\u2022')),
+                style: const TextStyle(fontSize: 24),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Flexible(
+                      child: Ink(
+                        decoration: BoxDecoration(
+                          color: isSelected ? Colors.blue : Colors.black,
+                          borderRadius: BorderRadius.circular(10),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey[400]!,
+                              offset: const Offset(1, 2),
+                              blurRadius: 3,
+                            ),
+                          ],
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 8,
+                          ),
+                          child: Text(
+                            repo.name,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Ink(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey[400]!,
+                            offset: const Offset(1, 2),
+                            blurRadius: 3,
+                          ),
+                        ],
+                        border: isSelected
+                            ? Border.all(color: Colors.blueAccent, width: 1)
+                            : null,
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(
+                            Icons.star,
+                            color: Colors.yellow,
+                            size: 18,
+                            shadows: [
+                              BoxShadow(
+                                color: Colors.black,
+                                offset: Offset(.2, .2),
+                                spreadRadius: 2.2,
+                              ),
+                            ],
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            '${repo.stargazerCount}',
+                            style: const TextStyle(fontWeight: FontWeight.w500),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

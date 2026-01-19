@@ -5,20 +5,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:github_graphql_app/auth/modal/auth_state.dart';
-import 'package:github_graphql_app/auth/services/authentication/github_authenticator.dart';
-import 'package:github_graphql_app/auth/services/credentials_storage/secure_credentials_storage.dart';
-import 'package:github_graphql_app/auth/view_modal/auth_cubit.dart';
+import 'package:github_graphql_app/src/auth/modal/auth_state.dart';
+import 'package:github_graphql_app/src/auth/services/authentication/github_authenticator.dart';
+import 'package:github_graphql_app/src/auth/services/credentials_storage/secure_credentials_storage.dart';
+import 'package:github_graphql_app/src/auth/view_modal/auth_cubit.dart';
 import 'package:github_graphql_app/core/routes/app_route_config.dart';
 import 'package:github_graphql_app/core/shared/enums/screen_width.dart';
 import 'package:go_router/go_router.dart';
 
 class AppWrapper extends StatefulWidget {
-  const AppWrapper({
-    super.key,
-    required this.child,
-    required this.appRouter,
-  });
+  const AppWrapper({super.key, required this.child, required this.appRouter});
 
   final Widget child;
   final GoRouter appRouter;
@@ -54,9 +50,9 @@ class _AppWrapperState extends State<AppWrapper> with WidgetsBindingObserver {
     final double logicalWidth = display.size.width / display.devicePixelRatio;
 
     if (ScreenWidth.fromLogicalWidth(logicalWidth) == ScreenWidth.phone) {
-      SystemChrome.setPreferredOrientations(
-        <DeviceOrientation>[DeviceOrientation.portraitUp],
-      );
+      SystemChrome.setPreferredOrientations(<DeviceOrientation>[
+        DeviceOrientation.portraitUp,
+      ]);
     }
   }
 
@@ -90,9 +86,8 @@ class _AppWrapperState extends State<AppWrapper> with WidgetsBindingObserver {
       child: BlocListener<AuthCubit, AuthState>(
         listener: (context, state) {
           state.maybeMap(
-            authenticated: (_) => widget.appRouter.goNamed(
-              AppRouteConfig.repos.name,
-            ),
+            authenticated: (_) =>
+                widget.appRouter.goNamed(AppRouteConfig.repos.name),
             unauthenticated: (_) async {
               // Delaying to show to the splash screen
               if (_isStartUp) {
